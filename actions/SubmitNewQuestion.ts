@@ -1,5 +1,5 @@
 "use server";
-import { FormValuesTypes } from "@/components/CreateRoomForm";
+import { FormValuesTypes } from "@/components/CreateQuistionsForm";
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 

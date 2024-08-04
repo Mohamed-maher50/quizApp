@@ -1,4 +1,4 @@
-import CreateRoomForm from "@/components/CreateRoomForm";
+import CreateRoomForm from "@/components/CreateQuistionsForm";
 import React from "react";
 
 const page = ({ params: { id } }: { params: { id: string } }) => {
