@@ -1,9 +1,12 @@
+import { createNewRoom } from "@/actions/CreateRoom";
+import CreateNewRoomBtn from "@/components/CreateNewRoomBtn";
 import { Button } from "@/components/ui/button";
+import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 
-export default function Home() {
+export default async function Home() {
   return (
-    <main className="flex items-center h-screen  justify-center">
+    <main className="flex items-center h-full pt-14  justify-center">
       <div className="container mx-auto">
         <div className="flex  items-center justify-between">
           <div className="flex  space-y-4 flex-col gap-2 w-fit mx-auto">
@@ -19,9 +22,10 @@ export default function Home() {
             </p>
             <div className="flex gap-3">
               <Button size={"lg"}>Join To Room</Button>
-              <Button variant={"outline"} size={"lg"}>
+              <CreateNewRoomBtn />
+              {/* <Button onClick={createNewRoom} variant={"outline"} size={"lg"}>
                 New Room
-              </Button>
+              </Button> */}
             </div>
           </div>
 
