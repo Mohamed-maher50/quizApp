@@ -14,17 +14,19 @@ datasource db {
 }
 
 model Room {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  creator String @db.ObjectId
-  members User[]
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  creator String
+  members String[]
 }
 
 model Question {
-  id              String    @id @default(auto()) @map("_id") @db.ObjectId
-  roomId          String    @db.ObjectId
-  question        String
-  correctAnswerId String    @db.ObjectId
-  answers         Answers[]
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  roomId        String @db.ObjectId
+  question      String
+  options       Json[]
+  correctAnswer String
+
+  Answers Answers[]
 }
 
 model Answers {
@@ -32,12 +34,5 @@ model Answers {
   Question   Question? @relation(fields: [questionId], references: [id])
   questionId String?   @db.ObjectId
   answer     String
-}
-
-model User {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  email     String  @unique
-  avatarUrl String
-  Room      Room?   @relation(fields: [roomId], references: [id])
-  roomId    String? @db.ObjectId
+  userId     String    @db.ObjectId
 }
