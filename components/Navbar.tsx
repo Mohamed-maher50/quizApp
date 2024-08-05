@@ -1,13 +1,17 @@
+"use client";
 import Image from "next/image";
 import React from "react";
 import { ModeToggle } from "./ToggleTheme";
 import Link from "next/link";
+import { UserButton, useUser } from "@clerk/nextjs";
+import { Button } from "./ui/button";
 
 const Navbar = () => {
+  const { isSignedIn, user } = useUser();
   return (
     <nav className="bg-secondary  dark:bg-transparent">
       <div className="container  mx-auto  px-5 ">
-        <div className="flex items-center">
+        <div className="flex gap-3 items-center">
           <Link href={"/"} className="flex-1 ">
             <Image
               src="/logo.png"
@@ -17,9 +21,15 @@ const Navbar = () => {
               className="object-cover"
             />
           </Link>
+          {isSignedIn && (
+            <Button asChild variant={"outline"}>
+              <Link href={"/rooms/my"}>my Rooms</Link>
+            </Button>
+          )}
           <div>
             <ModeToggle />
           </div>
+          {isSignedIn && <UserButton />}
         </div>
       </div>
     </nav>

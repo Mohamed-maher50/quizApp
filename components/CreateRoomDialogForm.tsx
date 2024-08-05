@@ -50,10 +50,12 @@ const CreateRoomDialogForm = () => {
     return null;
   }
   const handleOnSubmit = async (values: createRoomSchemaTypes) => {
-    return await createNewRoomAction({
+    await createNewRoomAction({
       ...values,
       userId: user.id,
     });
+    setIsOpen(false);
+    form.reset();
   };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
