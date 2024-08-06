@@ -37,3 +37,32 @@ export const updateRoomAction = async ({
     console.error(`Error while updating room: ${error}`);
   }
 };
+
+export const joinToRoomAction = async ({
+  code,
+  password = undefined,
+  userId,
+}: {
+  code: string;
+  password?: string | null;
+  userId: string;
+}) => {
+  try {
+    const room = await prisma.room.findFirst({
+      where: {
+        code,
+        password,
+      },
+    });
+    if (!room) throw new Error(`Could not find room`);
+    if (!room?.members.includes(userId)) {
+      room.members.push(userId);
+    }
+    await prisma.room.update({
+      where: { id: room.id },
+      data: { members: room.members },
+    });
+  } catch (error) {
+    console.log(` Error while joining to room: ${error}`);
+  }
+};

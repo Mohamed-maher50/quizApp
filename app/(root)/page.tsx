@@ -1,16 +1,19 @@
 import CreateRoomDialogForm from "@/components/CreateRoomDialogForm";
+import JoinToRoomDialog from "@/components/JoinToRoomDialog";
 import { Button } from "@/components/ui/button";
-
+import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 
 export default async function Home() {
+  const user = await currentUser();
+
   return (
     <main className="flex items-center h-full pt-14  justify-center">
       <div className="container mx-auto">
         <div className="flex  items-center justify-between">
           <div className="flex  space-y-4 flex-col gap-2 w-fit mx-auto">
             <h1 className="text-6xl font-bold text-primary">
-              Best Online{" "}
+              Best Online
               <span className="dark:text-white text-black">Education </span>
             </h1>
             <p className="text-lg">
@@ -20,7 +23,9 @@ export default async function Home() {
               aperiam reprehenderit repellendus ad eos est.
             </p>
             <div className="flex gap-3">
-              <Button size={"lg"}>Join To Room</Button>
+              {/* i make userId as string because this page protect via middleware if no user can't access this page */}
+              <JoinToRoomDialog userId={user?.id as string} />
+
               <CreateRoomDialogForm />
             </div>
           </div>
