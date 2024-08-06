@@ -4,14 +4,18 @@ export const createRoomSchema = z
   .object({
     title: z.string().min(2, { message: "To Short Room Name " }),
     description: z
-      .string()
-      .min(3, { message: "to short description" })
-      .optional(),
+      .union([z.string().min(3, { message: "to short description" }), z.null()])
+      .optional()
+      .default(null),
     isPrivate: z.boolean().optional(),
     password: z
-      .string()
-      .min(8, { message: "Password is too short" })
-      .optional(),
+      .union([
+        z.string().min(8, { message: "Password is too short" }),
+        z.null(),
+      ])
+
+      .optional()
+      .default(null),
   })
   .superRefine((data, clx) => {
     if (data.isPrivate && !data.password) {

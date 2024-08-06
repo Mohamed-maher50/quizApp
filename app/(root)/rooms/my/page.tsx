@@ -8,8 +8,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import UpdateRoomDialogForm from "@/components/UpdateRoomDialog";
 import { currentUser } from "@clerk/nextjs/server";
-import { Badge, Lock, LockOpen, User } from "lucide-react";
+import { Lock, LockOpen, User } from "lucide-react";
 import React from "react";
 
 const myRooms = async () => {
@@ -23,28 +24,40 @@ const myRooms = async () => {
           {rooms?.map((room) => {
             return (
               <Card
-                className="border-secondary flex flex-col cursor-pointer hover:-translate-y-2 duration-500 border p-4 rounded-md shadow-md"
+                className="border-secondary flex flex-col  duration-500 border p-4 rounded-md shadow-md"
                 key={room.id}
               >
                 <CardHeader>
                   <CardTitle>{room.title}</CardTitle>
                   <CardDescription>{room.description}</CardDescription>
                 </CardHeader>
-                <CardContent className="flex justify-between">
-                  <span className="flex text-lg gap-2">
-                    {room.members.length}
-                    <User />
-                  </span>
+                <CardContent className="flex flex-col ">
+                  <div className="flex justify-between">
+                    <span className="flex items-center text-lg gap-2">
+                      {room.members.length}
+                      <User size={19} />
+                    </span>
 
-                  <span>
-                    {room.isPrivate ? (
-                      <Lock className="text-destructive" />
-                    ) : (
-                      <LockOpen className="text-green-600" />
-                    )}
-                  </span>
+                    <span className="flex items-center">
+                      {room.isPrivate ? (
+                        <Lock size={19} className="text-destructive" />
+                      ) : (
+                        <LockOpen size={19} className="text-green-600" />
+                      )}
+                    </span>
+                  </div>
+
+                  <UpdateRoomDialogForm
+                    defaultValues={{
+                      description: room.description,
+                      title: room.title,
+                      isPrivate: room.isPrivate,
+                      password: room.password,
+                    }}
+                    roomId={room.id}
+                  />
                 </CardContent>
-                <CardFooter className="mt-auto">
+                <CardFooter className="mt-auto w-full flex flex-col">
                   <Button className="w-full " variant={"outline"}>
                     View room
                   </Button>
