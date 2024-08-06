@@ -1,21 +1,21 @@
 "use server";
+import { createNewRoomActionProps } from "@/interfaces/interfaces.actions";
 import { PrismaClient } from "@prisma/client";
+
 const prisma = new PrismaClient();
-export const createNewRoom = async ({
+export const createNewRoomAction = async ({
   userId,
-  title,
-}: {
-  userId: string;
-  title: string;
-}) => {
+  ...values
+}: createNewRoomActionProps) => {
   try {
     const room = await prisma.room.create({
       data: {
         creator: userId,
         members: [],
-        title,
+        ...values,
       },
     });
+
     return room;
   } catch (error) {
     console.log(`Error during creating room: ${error}`);

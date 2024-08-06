@@ -14,12 +14,13 @@ datasource db {
 }
 
 model Room {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  creator String
-  members String[]
-
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  creator     String
+  members     String[]
   title       String
   description String?
+  password    String?
+  isPrivate   Boolean  @default(false)
 }
 
 model Question {

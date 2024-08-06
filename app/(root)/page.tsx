@@ -1,7 +1,6 @@
-import { createNewRoom } from "@/actions/CreateRoom";
-import CreateNewRoomBtn from "@/components/CreateNewRoomBtn";
+import CreateRoomDialogForm from "@/components/CreateRoomDialogForm";
 import { Button } from "@/components/ui/button";
-import { currentUser } from "@clerk/nextjs/server";
+
 import Image from "next/image";
 
 export default async function Home() {
@@ -22,10 +21,7 @@ export default async function Home() {
             </p>
             <div className="flex gap-3">
               <Button size={"lg"}>Join To Room</Button>
-              <CreateNewRoomBtn />
-              {/* <Button onClick={createNewRoom} variant={"outline"} size={"lg"}>
-                New Room
-              </Button> */}
+              <CreateRoomDialogForm />
             </div>
           </div>
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -23,57 +23,70 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { Switch } from "./ui/switch";
-import { Loader2 } from "lucide-react";
-import { createNewRoomAction } from "@/actions/CreateRoom";
+import { Loader2, Settings } from "lucide-react";
+
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { updateRoomAction } from "@/actions/Rooms";
 
-const defaultValues: Partial<createRoomSchemaTypes> = {
-  isPrivate: false,
-};
-const CreateRoomDialogForm = () => {
+const UpdateRoomDialogForm = ({
+  defaultValues,
+  roomId,
+}: {
+  defaultValues: Partial<createRoomSchemaTypes>;
+  roomId: string;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const { isSignedIn, user } = useUser();
   const router = useRouter();
   const form = useForm<createRoomSchemaTypes>({
     resolver: zodResolver(createRoomSchema),
-    defaultValues,
+    defaultValues: defaultValues,
   });
-  const { isSubmitting } = form.formState;
+
+  const { isSubmitting, isLoading } = form.formState;
   const isPrivate = useWatch({
     control: form.control,
     name: "isPrivate",
+    defaultValue: defaultValues.isPrivate,
   });
+
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [defaultValues, form, form.formState.isSubmitSuccessful]);
+  if (isLoading) return null;
 
   if (!isSignedIn) {
     router.push("/sign-in");
     return null;
   }
   const handleOnSubmit = async (values: createRoomSchemaTypes) => {
-    await createNewRoomAction({
+    await updateRoomAction({
       ...values,
       userId: user.id,
+      roomId,
+      password: isPrivate ? values.password : undefined,
     });
     setIsOpen(false);
-    form.reset();
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger
-        asChild
-        onClick={() => {
-          setIsOpen(true);
-        }}
-      >
-        <Button variant={"outline"} size={"lg"}>
-          Create New Room
-        </Button>
-      </DialogTrigger>
+      <div className="flex mt-2 items-center  justify-between text-sm">
+        <span>Room Settings</span>
+        <DialogTrigger asChild>
+          <Settings
+            size={17}
+            className="paused hover:running animate-spin  cursor-pointer"
+          />
+        </DialogTrigger>
+      </div>
+
       <DialogContent className="duration-500">
         <DialogHeader>
-          <DialogTitle> Create New Exam Room</DialogTitle>
+          <DialogTitle> Update Your Exam Room</DialogTitle>
           <DialogDescription>
-            Follow the steps to create and personalize your exam room.
+            Follow the steps to Update and personalize your exam room.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -107,6 +120,7 @@ const CreateRoomDialogForm = () => {
                       <Input
                         placeholder="Enter Room Description ( optional )"
                         {...field}
+                        value={field.value || undefined}
                       />
                     </FormControl>
                     <FormMessage />
@@ -131,27 +145,32 @@ const CreateRoomDialogForm = () => {
                 );
               }}
             />
-            {isPrivate && (
-              <FormField
-                name="password"
-                control={form.control}
-                render={({ field }) => {
-                  return (
-                    <FormItem>
-                      <FormLabel>Password (optional)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="Set a password"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            )}{" "}
+
+            <FormField
+              name="password"
+              control={form.control}
+              render={({ field }) => {
+                return (
+                  <FormItem
+                    style={{
+                      display: isPrivate ? "block" : "none",
+                    }}
+                  >
+                    <FormLabel>Password (optional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Set a password"
+                        {...field}
+                        value={field.value || undefined}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
             <Button
               type="submit"
               className="mt-4 flex gap-2"
@@ -170,4 +189,4 @@ const CreateRoomDialogForm = () => {
   );
 };
 
-export default CreateRoomDialogForm;
+export default UpdateRoomDialogForm;
