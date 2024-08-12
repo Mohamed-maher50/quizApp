@@ -54,16 +54,17 @@ const UpdateRoomDialogForm = ({
   useEffect(() => {
     form.reset(defaultValues);
   }, [defaultValues, form, form.formState.isSubmitSuccessful]);
+  useEffect(() => {
+    if (!isSignedIn) {
+      router.push("/sign-in");
+    }
+  }, [isSignedIn]);
   if (isLoading) return null;
 
-  if (!isSignedIn) {
-    router.push("/sign-in");
-    return null;
-  }
   const handleOnSubmit = async (values: createRoomSchemaTypes) => {
     await updateRoomAction({
       ...values,
-      userId: user.id,
+      userId: user?.id as string,
       roomId,
       password: isPrivate ? values.password : undefined,
     });

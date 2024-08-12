@@ -21,6 +21,7 @@ model Room {
   description String?
   password    String?
   isPrivate   Boolean  @default(false)
+  code        String
 }
 
 model Question {

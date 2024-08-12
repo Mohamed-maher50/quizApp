@@ -1,7 +1,7 @@
 "use server";
 import { createNewRoomActionProps } from "@/interfaces/interfaces.actions";
 import { PrismaClient } from "@prisma/client";
-
+import { nanoid } from "nanoid";
 const prisma = new PrismaClient();
 export const createNewRoomAction = async ({
   userId,
@@ -13,6 +13,7 @@ export const createNewRoomAction = async ({
         creator: userId,
         members: [],
         ...values,
+        code: nanoid(6),
       },
     });
 

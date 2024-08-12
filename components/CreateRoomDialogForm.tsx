@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -45,14 +45,16 @@ const CreateRoomDialogForm = () => {
     name: "isPrivate",
   });
 
-  if (!isSignedIn) {
-    router.push("/sign-in");
-    return null;
-  }
+  useEffect(() => {
+    if (!isSignedIn) {
+      router.push("/sign-in");
+    }
+  }, []);
+
   const handleOnSubmit = async (values: createRoomSchemaTypes) => {
     await createNewRoomAction({
       ...values,
-      userId: user.id,
+      userId: user?.id as string,
     });
     setIsOpen(false);
     form.reset();
@@ -107,6 +109,7 @@ const CreateRoomDialogForm = () => {
                       <Input
                         placeholder="Enter Room Description ( optional )"
                         {...field}
+                        value={field.value || undefined}
                       />
                     </FormControl>
                     <FormMessage />
@@ -144,6 +147,7 @@ const CreateRoomDialogForm = () => {
                           type="password"
                           placeholder="Set a password"
                           {...field}
+                          value={field.value || undefined}
                         />
                       </FormControl>
                       <FormMessage />
