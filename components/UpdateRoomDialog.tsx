@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -24,11 +25,23 @@ import {
 import { Input } from "./ui/input";
 import { Switch } from "./ui/switch";
 import { Loader2, Settings } from "lucide-react";
-
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { updateRoomAction } from "@/actions/Rooms";
-
+import { deleteRoom, updateRoomAction } from "@/actions/Rooms";
+import SubmitButton from "@/app/SubmitButton";
+import { useToast } from "./ui/use-toast";
+const messages = {
+  success: {
+    title: "Room deleted successfully",
+    description: "Your room has been deleted successfully.",
+    variant: "default",
+  },
+  error: {
+    title: "Failed to delete room",
+    description: "An error occurred while delete your room.",
+    variant: "destructive",
+  },
+};
 const UpdateRoomDialogForm = ({
   defaultValues,
   roomId,
@@ -37,7 +50,7 @@ const UpdateRoomDialogForm = ({
   roomId: string;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn, user, isLoaded } = useUser();
   const router = useRouter();
   const form = useForm<createRoomSchemaTypes>({
     resolver: zodResolver(createRoomSchema),
@@ -50,15 +63,17 @@ const UpdateRoomDialogForm = ({
     name: "isPrivate",
     defaultValue: defaultValues.isPrivate,
   });
+  const { toast } = useToast();
 
   useEffect(() => {
     form.reset(defaultValues);
   }, [defaultValues, form, form.formState.isSubmitSuccessful]);
   useEffect(() => {
-    if (!isSignedIn) {
+    if (!isSignedIn && isLoaded) {
       router.push("/sign-in");
     }
   }, [isSignedIn]);
+
   if (isLoading) return null;
 
   const handleOnSubmit = async (values: createRoomSchemaTypes) => {
@@ -70,7 +85,13 @@ const UpdateRoomDialogForm = ({
     });
     setIsOpen(false);
   };
+  const handleOnSubmitDelete = async () => {
+    const result = await deleteRoom(roomId, user?.id as string);
+    if (!result) return toast({ ...messages["error"], variant: "destructive" });
+    toast({ ...messages["success"], variant: "default" });
 
+    setIsOpen(false);
+  };
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <div className="flex mt-2 items-center  justify-between text-sm">
@@ -171,18 +192,26 @@ const UpdateRoomDialogForm = ({
                 );
               }}
             />
-
-            <Button
-              type="submit"
-              className="mt-4 flex gap-2"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                <span>Create</span>
-              )}
-            </Button>
+            <DialogFooter className="flex mt-4 items-center">
+              <SubmitButton
+                variant={"ghost"}
+                type="button"
+                onClick={handleOnSubmitDelete}
+              >
+                Delete
+              </SubmitButton>
+              <Button
+                type="submit"
+                className=" flex gap-2"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <span>Create</span>
+                )}
+              </Button>
+            </DialogFooter>
           </form>
         </Form>{" "}
       </DialogContent>

@@ -2,6 +2,7 @@
 import { createNewRoomActionProps } from "@/interfaces/interfaces.actions";
 import { PrismaClient } from "@prisma/client";
 import { nanoid } from "nanoid";
+import { revalidatePath } from "next/cache";
 const prisma = new PrismaClient();
 export const createNewRoomAction = async ({
   userId,
@@ -17,6 +18,7 @@ export const createNewRoomAction = async ({
       },
     });
 
+    revalidatePath("/rooms/my");
     return room;
   } catch (error) {
     console.log(`Error during creating room: ${error}`);

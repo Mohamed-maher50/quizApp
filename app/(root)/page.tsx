@@ -1,6 +1,5 @@
 import CreateRoomDialogForm from "@/components/CreateRoomDialogForm";
 import JoinToRoomDialog from "@/components/JoinToRoomDialog";
-import { Button } from "@/components/ui/button";
 import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 

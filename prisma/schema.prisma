@@ -14,24 +14,26 @@ datasource db {
 }
 
 model Room {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
   creator     String
-  members     String[]
   title       String
   description String?
   password    String?
-  isPrivate   Boolean  @default(false)
+  isPrivate   Boolean    @default(false)
   code        String
+  Question    Question[]
+  Answers     Answers[]
+  members     String[] // ids of members populatetion // id mongodb
 }
 
 model Question {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
-  roomId        String @db.ObjectId
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  roomId        String    @db.ObjectId
+  room          Room?     @relation(fields: [roomId], references: [id])
   question      String
   options       Json[]
   correctAnswer String
-
-  Answers Answers[]
+  Answers       Answers[]
 }
 
 model Answers {
@@ -39,5 +41,16 @@ model Answers {
   Question   Question? @relation(fields: [questionId], references: [id])
   questionId String?   @db.ObjectId
   answer     String
-  userId     String    @db.ObjectId
+  userId     String
+  roomId     String    @db.ObjectId
+  room       Room      @relation(fields: [roomId], references: [id])
+}
+
+model User {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  email       String
+  username    String
+  avatar      String?
+  clerkUserId String? @unique
+  roomId      String? @db.ObjectId
 }

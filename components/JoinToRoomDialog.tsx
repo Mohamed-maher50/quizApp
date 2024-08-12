@@ -31,6 +31,7 @@ const JoinToRoomDialog = ({ userId }: { userId: string }) => {
   });
 
   const onSubmit = async (data: JoinToRoomSchemaTypes) => {
+    console.log(userId);
     await joinToRoomAction({
       ...data,
       password: data.password ? data.password : null,
