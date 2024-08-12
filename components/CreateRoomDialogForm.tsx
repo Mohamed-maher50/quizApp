@@ -33,7 +33,7 @@ const defaultValues: Partial<createRoomSchemaTypes> = {
 };
 const CreateRoomDialogForm = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn, user, isLoaded } = useUser();
   const router = useRouter();
   const form = useForm<createRoomSchemaTypes>({
     resolver: zodResolver(createRoomSchema),
@@ -46,7 +46,7 @@ const CreateRoomDialogForm = () => {
   });
 
   useEffect(() => {
-    if (!isSignedIn) {
+    if (!isSignedIn && isLoaded) {
       router.push("/sign-in");
     }
   }, []);
@@ -168,7 +168,7 @@ const CreateRoomDialogForm = () => {
               )}
             </Button>
           </form>
-        </Form>{" "}
+        </Form>
       </DialogContent>
     </Dialog>
   );

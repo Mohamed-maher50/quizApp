@@ -14,6 +14,10 @@ pnpm dev
 bun dev
 ```
 
+## in this project will be use clerk for authentication to run web hooks locally you should run this command and let it running with server
+
+lt --port 3000 --subdomain plain-jobs-report
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.

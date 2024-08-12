@@ -1,16 +1,45 @@
 "use server";
 import { updateRoomActionProps } from "@/interfaces/interfaces.actions";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
 import { revalidatePath } from "next/cache";
 const prisma = new PrismaClient();
 
-export const getMyRooms = async function ({ userId }: { userId: string }) {
+interface getMyRoomsActionProps {
+  userId: string;
+}
+interface getRoomActionProps extends Prisma.RoomFindManyArgs {}
+export const getMyRooms = async function (
+  { userId }: getMyRoomsActionProps,
+  { skip, take }: getRoomActionProps
+) {
   try {
-    const rooms = await prisma.room.findMany({
+    const count = await prisma.room.count({
       where: {
         creator: userId,
       },
     });
+    const rooms = await prisma.room.findMany({
+      skip,
+      take,
+      where: {
+        creator: userId,
+      },
+    });
+    return { data: rooms, count: count };
+  } catch (error) {
+    console.error(`Error while getting my rooms: ${error}`);
+  }
+};
+export const deleteRoom = async function (roomId: string, userId: string) {
+  try {
+    const rooms = await prisma.room.delete({
+      where: {
+        creator: userId,
+        id: roomId,
+      },
+    });
+    revalidatePath("/rooms/my");
     return rooms;
   } catch (error) {
     console.error(`Error while getting my rooms: ${error}`);
@@ -55,13 +84,22 @@ export const joinToRoomAction = async ({
       },
     });
     if (!room) throw new Error(`Could not find room`);
-    if (!room?.members.includes(userId)) {
-      room.members.push(userId);
+    if (room) {
+      // Check if the user is already a member
+      if (!room.members.some((member) => member === userId)) {
+        // Add the user to the members array
+        await prisma.room.update({
+          where: { id: room.id }, // Use the room's unique identifier (id) for the update
+          data: {
+            members: {
+              push: userId,
+            },
+          },
+        });
+      }
+    } else {
+      console.log("No matching room found.");
     }
-    await prisma.room.update({
-      where: { id: room.id },
-      data: { members: room.members },
-    });
   } catch (error) {
     console.log(` Error while joining to room: ${error}`);
   }

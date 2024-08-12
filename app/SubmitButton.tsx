@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Loader } from "lucide-react";
 import React, {
@@ -8,7 +8,8 @@ import React, {
 } from "react";
 interface ISubmitButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
-    PropsWithChildren {
+    PropsWithChildren,
+    ButtonProps {
   isLoading?: boolean;
   disabled?: boolean;
 }
