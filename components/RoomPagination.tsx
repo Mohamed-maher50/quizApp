@@ -34,7 +34,7 @@ const RoomPagination = ({
       return handleSearch((+currentPage + 1).toString(), "page");
   };
 
-  let paginationItemsNum = Math.ceil(count / limit);
+  let paginationItemsNum = Math.round(count / limit);
   const paginationItems = Array.from(
     { length: paginationItemsNum },
     (_, index) => index
@@ -43,6 +43,8 @@ const RoomPagination = ({
   const paginationItemHandler = (index: number) => {
     handleSearch((index + 1).toString(), "page");
   };
+
+  if (paginationItemsNum <= 1) return null;
   return (
     <Pagination className="w-fit mt-5 mx-auto col-span-full">
       <PaginationContent>

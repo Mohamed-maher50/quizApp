@@ -4,6 +4,7 @@ import {
   answerSchema,
   answersSchema,
 } from "@/services/validation/QuestionsValidator";
+import { Answers, Questions } from "@prisma/client";
 import { z } from "zod";
 
 export type createRoomSchemaTypes = z.infer<typeof createRoomSchema>;
@@ -18,8 +19,16 @@ export interface updateRoomActionProps extends Partial<createRoomSchemaTypes> {
   userId: string;
   roomId: string;
 }
+
 export interface ISubmitUserAnswerAction {
   answers: answerSchemaTypes[];
-  userId: string;
   roomId: string;
+  studentId: string;
+}
+export interface updateQuestionActionProps {
+  questionId: string;
+  data: Partial<Questions>;
+}
+export interface updateAnswersActionProps {
+  answers: Array<Partial<Answers>>;
 }

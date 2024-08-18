@@ -1,5 +1,5 @@
 "use client";
-import { Question } from "@prisma/client";
+import { Answers, Questions } from "@prisma/client";
 import React, { Fragment } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,20 +16,21 @@ import {
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Input } from "./ui/input";
 import SubmitButton from "@/app/SubmitButton";
-import { submitUserAnswerAction } from "@/actions/Answers.actions";
 import { useRouter } from "next/navigation";
 import { useToast } from "./ui/use-toast";
-type Option = {
-  value: string;
-};
+import { submitUserAnswerAction } from "@/actions";
+
+interface PopulateQuestions extends Questions {
+  Answers: Omit<Answers, "isCorrect">[];
+}
 const QuestionsForm = ({
   questions,
   roomId,
-  userId,
+  studentId,
 }: {
-  questions: Question[];
+  questions: PopulateQuestions[];
   roomId: string;
-  userId: string;
+  studentId: string;
 }) => {
   const { toast } = useToast();
   const { replace } = useRouter();
@@ -37,14 +38,20 @@ const QuestionsForm = ({
     resolver: zodResolver(answersSchema),
     defaultValues: {
       roomId: roomId,
-      answers: questions.map((q) => ({ questionId: q.id, answer: undefined })),
+      answers: questions.map((q) => ({
+        questionId: q.id,
+        studentId,
+        answerId: "",
+      })),
     },
   });
+
   const handleSubmit = async (data: answersSchemaTypes) => {
+    console.log(data);
     await submitUserAnswerAction({
-      answers: data.answers,
-      userId,
+      studentId,
       roomId: roomId,
+      answers: data.answers,
     });
     form.reset();
     toast({
@@ -54,7 +61,7 @@ const QuestionsForm = ({
     });
     replace("/");
   };
-
+  console.log(form.formState.errors);
   return (
     <div>
       <Form {...form}>
@@ -62,35 +69,33 @@ const QuestionsForm = ({
           onSubmit={form.handleSubmit(handleSubmit)}
           className="flex flex-col gap-3"
         >
-          {questions.map(({ id, question, options }, index) => {
+          {questions.map(({ id, Answers, text }, index) => {
             return (
               <Fragment key={id}>
                 <FormField
                   control={form.control}
                   key={id}
-                  name={`answers.${index}.answer`}
+                  name={`answers.${index}.answerId`}
                   render={({ field }) => (
                     <FormItem className="space-y-3">
-                      <FormLabel className="text-xl">{question}</FormLabel>
+                      <FormLabel className="text-xl">{text}</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
                           defaultValue={field.value}
                           className="flex flex-col space-y-1"
                         >
-                          {options.map((option, index) => {
+                          {Answers.map((option, index) => {
                             return (
                               <FormItem
                                 key={index}
                                 className="flex items-center space-x-3 space-y-0"
                               >
                                 <FormControl>
-                                  <RadioGroupItem
-                                    value={(option as Option).value}
-                                  />
+                                  <RadioGroupItem value={option.id} />
                                 </FormControl>
                                 <FormLabel className="font-normal">
-                                  {(option as Option).value}
+                                  {option.text}
                                 </FormLabel>
                               </FormItem>
                             );

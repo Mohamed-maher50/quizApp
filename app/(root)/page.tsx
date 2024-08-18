@@ -1,11 +1,8 @@
 import CreateRoomDialogForm from "@/components/CreateRoomDialogForm";
 import JoinToRoomDialog from "@/components/JoinToRoomDialog";
-import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 
 export default async function Home() {
-  const user = await currentUser();
-
   return (
     <main className="flex items-center h-full pt-14  justify-center">
       <div className="container mx-auto">
@@ -23,8 +20,7 @@ export default async function Home() {
             </p>
             <div className="flex gap-3">
               {/* i make userId as string because this page protect via middleware if no user can't access this page */}
-              <JoinToRoomDialog userId={user?.id as string} />
-
+              <JoinToRoomDialog />
               <CreateRoomDialogForm />
             </div>
           </div>

@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body
           className={cn(
             "min-h-screen box-border h-full bg-background font-sans antialiased",

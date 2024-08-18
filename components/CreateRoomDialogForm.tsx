@@ -24,37 +24,33 @@ import {
 import { Input } from "./ui/input";
 import { Switch } from "./ui/switch";
 import { Loader2 } from "lucide-react";
-import { createNewRoomAction } from "@/actions/CreateRoom";
+
 import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { createNewRoomAction, getUserByClerk } from "@/actions";
+import { getUser } from "@/actions/Users.actions";
+import { currentUser } from "@clerk/nextjs/server";
 
 const defaultValues: Partial<createRoomSchemaTypes> = {
   isPrivate: false,
 };
 const CreateRoomDialogForm = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isSignedIn, user, isLoaded } = useUser();
-  const router = useRouter();
   const form = useForm<createRoomSchemaTypes>({
     resolver: zodResolver(createRoomSchema),
     defaultValues,
   });
-  const { isSubmitting } = form.formState;
+  const { isSubmitting, isDirty } = form.formState;
   const isPrivate = useWatch({
     control: form.control,
     name: "isPrivate",
   });
-
-  useEffect(() => {
-    if (!isSignedIn && isLoaded) {
-      router.push("/sign-in");
-    }
-  }, []);
-
+  const { user } = useUser();
   const handleOnSubmit = async (values: createRoomSchemaTypes) => {
+    if (!user) return;
+    const mongoDBId = user.publicMetadata.mongoDBId as string;
     await createNewRoomAction({
       ...values,
-      userId: user?.id as string,
+      userId: mongoDBId,
     });
     setIsOpen(false);
     form.reset();
