@@ -1,5 +1,6 @@
 import { getMyRooms } from "@/actions";
 import { getUser } from "@/actions/Users.actions";
+import CopyButton from "@/components/CopyButton";
 import CreateRoomDialogForm from "@/components/CreateRoomDialogForm";
 import RoomPagination from "@/components/RoomPagination";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -14,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import UpdateRoomDialogForm from "@/components/UpdateRoomDialog";
 
-import { BookOpenCheck, Lock, LockOpen, User } from "lucide-react";
+import { BookOpenCheck, Lock, LockOpen, ScanBarcode, User } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 interface IMyRoomsPageProps {
@@ -75,14 +76,21 @@ const myRooms = async ({ searchParams: { page = "1" } }: IMyRoomsPageProps) => {
                     {room.description}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-col ">
+                <CardContent className="flex flex-col gap-3">
                   <div className="flex justify-between">
                     <span className="flex items-center text-lg gap-2">
-                      {room.Students.length}
-                      <User size={19} />
+                      <ScanBarcode size={19} />
+                      <span className="text-sm">#{room.code}</span>
                     </span>
 
-                    <span className="flex items-center">
+                    <CopyButton text={room.code} />
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="flex items-center text-lg gap-2">
+                      <User size={19} /> {room.Students.length}
+                    </span>
+
+                    <span className="flex  mr-1 items-center">
                       {room.isPrivate ? (
                         <Lock size={19} className="text-destructive" />
                       ) : (
@@ -90,7 +98,6 @@ const myRooms = async ({ searchParams: { page = "1" } }: IMyRoomsPageProps) => {
                       )}
                     </span>
                   </div>
-
                   <UpdateRoomDialogForm
                     defaultValues={{
                       description: room.description,
