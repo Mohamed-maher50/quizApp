@@ -36,11 +36,15 @@ export async function POST(request: Request) {
           },
         });
 
-        await clerkClient().users.updateUserMetadata(clerkUserId, {
-          publicMetadata: {
-            mongoDBId: user.id, // Assuming `user.id` is the MongoDB ObjectId
-          },
-        });
+        const clerkUser = await clerkClient().users.updateUserMetadata(
+          clerkUserId,
+          {
+            publicMetadata: {
+              mongoDBId: user.id, // Assuming `user.id` is the MongoDB ObjectId
+            },
+          }
+        );
+
         break;
       }
 

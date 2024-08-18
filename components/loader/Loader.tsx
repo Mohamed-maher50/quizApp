@@ -20,10 +20,10 @@ const Loader = () => {
           r="70"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
-          stroke-dasharray="439.82 439.82"
-          stroke-dashoffset="439.82"
-          stroke-linecap="round"
+          strokeWidth="2"
+          strokeDasharray="439.82 439.82"
+          strokeDashoffset="439.82"
+          strokeLinecap="round"
           transform="rotate(-113,100,100)"
         ></circle>
         <g className="pencil__rotate" transform="translate(100,100)">
@@ -32,27 +32,27 @@ const Loader = () => {
               className="pencil__body1"
               r="64"
               stroke="hsl(30, 30%, 50%)"
-              stroke-width="30"
-              stroke-dasharray="402.12 402.12"
-              stroke-dashoffset="402"
+              strokeWidth="30"
+              strokeDasharray="402.12 402.12"
+              strokeDashoffset="402"
               transform="rotate(-90)"
             ></circle>
             <circle
               className="pencil__body2"
               r="74"
               stroke="hsl(30, 30%, 60%)"
-              stroke-width="10"
-              stroke-dasharray="464.96 464.96"
-              stroke-dashoffset="465"
+              strokeWidth="10"
+              strokeDasharray="464.96 464.96"
+              strokeDashoffset="465"
               transform="rotate(-90)"
             ></circle>
             <circle
               className="pencil__body3"
               r="54"
               stroke="hsl(30, 30%, 40%)"
-              stroke-width="10"
-              stroke-dasharray="339.29 339.29"
-              stroke-dashoffset="339"
+              strokeWidth="10"
+              strokeDasharray="339.29 339.29"
+              strokeDashoffset="339"
               transform="rotate(-90)"
             ></circle>
           </g>
@@ -69,7 +69,7 @@ const Loader = () => {
                 fill="hsl(30, 20%, 85%)"
                 width="5"
                 height="30"
-                clip-path="url(#pencil-eraser)"
+                clipPath="url(#pencil-eraser)"
               ></rect>
               <rect fill="hsl(30, 20%, 80%)" width="30" height="20"></rect>
               <rect fill="hsl(30, 20%, 75%)" width="15" height="20"></rect>

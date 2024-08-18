@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation";
 import { deleteRoom, updateRoomAction } from "@/actions/Rooms";
 import SubmitButton from "@/app/SubmitButton";
 import { useToast } from "./ui/use-toast";
+import { getUserByClerk } from "@/actions";
 const messages = {
   success: {
     title: "Room deleted successfully",
@@ -57,7 +58,7 @@ const UpdateRoomDialogForm = ({
     defaultValues: defaultValues,
   });
 
-  const { isSubmitting, isLoading } = form.formState;
+  const { isSubmitting, isLoading, isDirty } = form.formState;
   const isPrivate = useWatch({
     control: form.control,
     name: "isPrivate",
@@ -68,18 +69,22 @@ const UpdateRoomDialogForm = ({
   useEffect(() => {
     form.reset(defaultValues);
   }, [defaultValues, form, form.formState.isSubmitSuccessful]);
-  useEffect(() => {
-    if (!isSignedIn && isLoaded) {
-      router.push("/sign-in");
-    }
-  }, [isSignedIn]);
+
+  if (!isSignedIn && isLoaded) {
+    router.push("/sign-in");
+  }
 
   if (isLoading) return null;
 
   const handleOnSubmit = async (values: createRoomSchemaTypes) => {
+    if (!user) return;
+    const userId = await getUserByClerk({
+      clerkId: user.id,
+    });
+    if (!userId) return;
     await updateRoomAction({
       ...values,
-      userId: user?.id as string,
+      userId: userId.id,
       roomId,
       password: isPrivate ? values.password : undefined,
     });
@@ -203,7 +208,7 @@ const UpdateRoomDialogForm = ({
               <Button
                 type="submit"
                 className=" flex gap-2"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isDirty}
               >
                 {isSubmitting ? (
                   <Loader2 className="animate-spin" />

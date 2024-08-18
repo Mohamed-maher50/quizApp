@@ -19,9 +19,10 @@ import { JoinToRoomSchemaTypes } from "@/interfaces/interfaces.actions";
 import { JoinToRoomSchema } from "@/services/validation/JoinToRoomValidator";
 import SubmitButton from "@/app/SubmitButton";
 import { Switch } from "./ui/switch";
-import { joinToRoomAction } from "@/actions/Rooms";
+import { joinToRoomAction } from "@/actions";
+import { useUser } from "@clerk/nextjs";
 
-const JoinToRoomDialog = ({ userId }: { userId: string }) => {
+const JoinToRoomDialog = () => {
   const form = useForm<JoinToRoomSchemaTypes>({
     resolver: zodResolver(JoinToRoomSchema),
   });
@@ -30,14 +31,16 @@ const JoinToRoomDialog = ({ userId }: { userId: string }) => {
     name: "isPrivate",
   });
 
+  const { user } = useUser();
+  const userMongoDBId = user?.publicMetadata.mongoDBId as string;
+
   const onSubmit = async (data: JoinToRoomSchemaTypes) => {
-    console.log(userId);
     await joinToRoomAction({
       ...data,
       password: data.password ? data.password : null,
-      userId,
+      userId: userMongoDBId,
     });
-    // form.reset();
+    form.reset();
   };
 
   return (

@@ -7,7 +7,7 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "./ui/button";
 
 const Navbar = () => {
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn } = useUser();
   return (
     <nav className="bg-secondary  dark:bg-transparent">
       <div className="container  mx-auto  px-5 ">
@@ -22,9 +22,14 @@ const Navbar = () => {
             />
           </Link>
           {isSignedIn && (
-            <Button asChild variant={"outline"}>
-              <Link href={"/rooms/my"}>my Rooms</Link>
-            </Button>
+            <>
+              <Button asChild variant={"ghost"}>
+                <Link href={"/rooms/exams"}>exams Rooms</Link>
+              </Button>
+              <Button asChild variant={"outline"}>
+                <Link href={"/rooms/my"}>my Rooms</Link>
+              </Button>
+            </>
           )}
           <div>
             <ModeToggle />

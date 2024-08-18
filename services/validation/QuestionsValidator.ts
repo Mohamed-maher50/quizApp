@@ -1,7 +1,7 @@
 import { z } from "zod";
 export const answerSchema = z.object({
-  answer: z.string(),
-
+  answerId: z.string(),
+  studentId: z.string(),
   questionId: z.string(),
 });
 

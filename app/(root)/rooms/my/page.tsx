@@ -1,7 +1,6 @@
-import { getMyRooms } from "@/actions/Rooms";
+import { getMyRooms } from "@/actions";
+import { getUser } from "@/actions/Users.actions";
 import CreateRoomDialogForm from "@/components/CreateRoomDialogForm";
-import Loader from "@/components/loader/Loader";
-
 import RoomPagination from "@/components/RoomPagination";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -14,23 +13,27 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import UpdateRoomDialogForm from "@/components/UpdateRoomDialog";
-import { currentUser } from "@clerk/nextjs/server";
+
 import { BookOpenCheck, Lock, LockOpen, User } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 interface IMyRoomsPageProps {
   searchParams: { page?: string };
 }
+
 const myRooms = async ({ searchParams: { page = "1" } }: IMyRoomsPageProps) => {
-  const user = await currentUser();
-  let limit = 2;
+  const user = await getUser();
+  let limit = 6;
   const skip = (+page - 1) * limit;
-  const take = 2;
+  const take = 6;
   const rooms = await getMyRooms(
-    { userId: user?.id as string },
+    { userId: user.publicMetadata.mongoDBId as string },
     {
       take,
       skip,
+      include: {
+        Students: true,
+      },
     }
   );
 
@@ -67,13 +70,15 @@ const myRooms = async ({ searchParams: { page = "1" } }: IMyRoomsPageProps) => {
                 key={room.id}
               >
                 <CardHeader>
-                  <CardTitle>{room.title}</CardTitle>
-                  <CardDescription>{room.description}</CardDescription>
+                  <CardTitle className="capitalize">{room.title}</CardTitle>
+                  <CardDescription className="capitalize">
+                    {room.description}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col ">
                   <div className="flex justify-between">
                     <span className="flex items-center text-lg gap-2">
-                      {room.members.length}
+                      {room.Students.length}
                       <User size={19} />
                     </span>
 
@@ -98,7 +103,9 @@ const myRooms = async ({ searchParams: { page = "1" } }: IMyRoomsPageProps) => {
                 </CardContent>
                 <CardFooter className="mt-auto w-full flex flex-col">
                   <Button asChild className="w-full " variant={"outline"}>
-                    <Link href={`/rooms/${room.id}/insert`}>manage</Link>
+                    <Link href={`/dashboard/admin/rooms/${room.id}`}>
+                      manage
+                    </Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -106,7 +113,7 @@ const myRooms = async ({ searchParams: { page = "1" } }: IMyRoomsPageProps) => {
           })}
           <RoomPagination
             active={+page || 1}
-            count={rooms.count}
+            count={rooms.data.length}
             limit={limit}
             isLastPage={isLastPage}
           />
