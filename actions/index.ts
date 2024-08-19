@@ -8,7 +8,7 @@ import {
 import prisma from "./prisma";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
-import { Prisma } from "@prisma/client";
+import { Prisma, Students } from "@prisma/client";
 import { FormValuesTypes } from "@/components/QuestionForm";
 
 interface getMyRoomsActionProps {
@@ -295,6 +295,38 @@ export const updateRoomAction = async ({
     return room;
   } catch (error) {
     console.error(`Error while updating room: ${error}`);
+  }
+};
+interface IGetMyExamsRoomProps {
+  userId: string;
+  filter?: Prisma.StudentsFindManyArgs;
+}
+export const getMyExamsRooms = async ({
+  userId,
+  filter = {},
+}: IGetMyExamsRoomProps) => {
+  const { where, include, ...other } = filter;
+  try {
+    const data = await prisma.students.findMany({
+      where: {
+        userId,
+        ...where,
+      },
+      include: {
+        room: true,
+        ...include,
+      },
+      ...other,
+    });
+
+    const count = await prisma.students.count({
+      where: {
+        userId,
+      },
+    });
+    return { data, count };
+  } catch (error) {
+    console.error(`Error while getting my exams: ${error}`);
   }
 };
 // ------------------------------------------------ Users actions --------------------------------
