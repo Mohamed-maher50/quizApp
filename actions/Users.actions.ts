@@ -3,7 +3,7 @@ import prisma from "./prisma";
 export const getUser = async () => {
   const clerkUser = await currentUser();
 
-  if (!clerkUser) throw new Error("No user logged in");
+  if (!clerkUser) return null;
 
   // Check if the MongoDB ID is already stored in Clerk's public metadata
   let mongoDBId = clerkUser.publicMetadata.mongoDBId;

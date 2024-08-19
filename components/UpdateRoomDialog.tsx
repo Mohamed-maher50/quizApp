@@ -104,7 +104,7 @@ const UpdateRoomDialogForm = ({
         <DialogTrigger asChild>
           <Settings
             size={17}
-            className="paused hover:running animate-spin  cursor-pointer"
+            className="paused hover:running animate-spin mr-1 cursor-pointer"
           />
         </DialogTrigger>
       </div>

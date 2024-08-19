@@ -1,0 +1,16 @@
+.rc-pagination-item{
+    @apply text-secondary border-none bg-secondary-foreground dark:text-black
+}
+.rc-pagination-jump-next,
+.rc-pagination-jump-prev
+ {
+
+        @apply text-secondary border-none bg-secondary-foreground dark:text-black
+}
+.rc-pagination-next,
+.rc-pagination-prev{
+    @apply text-secondary dark:text-black bg-secondary-foreground
+}
+.rc-pagination-item-active{
+    @apply bg-primary
+}
