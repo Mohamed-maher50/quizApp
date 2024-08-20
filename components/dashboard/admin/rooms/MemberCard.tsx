@@ -46,9 +46,7 @@ const MemberCard: FC<IMemberCardProps> = ({
             asChild
             className="text-green-700 hover:text-green-400 p-1 h-fit px-2 top-3 right-3"
           >
-            <Link
-              href={`/dashboard/admin/rooms/${roomId}/members/${id}/answer`}
-            >
+            <Link href={`/dashboard/rooms/${roomId}/members/${id}/answer`}>
               <EyeIcon size={16} />
             </Link>
           </Button>

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "./ui/button";
-import { ClapperboardIcon, Clipboard, ClipboardCheck } from "lucide-react";
+import { Clipboard, ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "./ui/use-toast";
 import { ToastProps } from "./ui/toast";

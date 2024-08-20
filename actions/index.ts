@@ -8,7 +8,7 @@ import {
 import prisma from "./prisma";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
-import { Prisma, Students } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { FormValuesTypes } from "@/components/QuestionForm";
 
 interface getMyRoomsActionProps {
@@ -90,15 +90,28 @@ export const joinToRoomAction = async ({
         password,
       },
     });
-    if (!room) throw new Error(`you already joined before`);
-    await prisma.students.create({
+
+    if (!room && !password) throw new Error(`not valid code # ${code}`);
+    if (!room && password) throw new Error(`not valid password or code`);
+    if (!room) throw new Error(`not found room `);
+    if (room.creator == userId) throw new Error(`can't join to your room`);
+    const student = await prisma.students.create({
       data: {
         roomId: room.id,
         userId,
       },
     });
-  } catch (error) {
-    console.log(` Error while joining to room: ${error}`);
+    return {
+      student,
+      error: null,
+    };
+  } catch (error: any) {
+    if (error.code == "P2002")
+      error.message = "you already joined this room before";
+    return {
+      student: null,
+      error: error.message || "fail to join room",
+    };
   }
 };
 export const createNewRoomAction = async ({
@@ -117,6 +130,7 @@ export const createNewRoomAction = async ({
     revalidatePath("/rooms/my");
     return room;
   } catch (error) {
+    console.log(error);
     console.log(`Error during creating room: ${error}`);
   }
 };
@@ -125,6 +139,11 @@ export const getMyRooms = async function (
   { skip, take, include }: getRoomActionProps
 ) {
   try {
+    const count = await prisma.room.count({
+      where: {
+        creator: userId,
+      },
+    });
     const rooms = await prisma.room.findMany({
       skip,
       take,
@@ -134,8 +153,11 @@ export const getMyRooms = async function (
       include: {
         ...include,
       },
+      orderBy: {
+        CreateAt: "desc",
+      },
     });
-    return { data: rooms };
+    return { data: rooms, count };
   } catch (error) {
     console.error(`Error while getting my rooms: ${error}`);
   }
@@ -158,6 +180,7 @@ export const createQuestionAction = async ({
         },
       },
     });
+    revalidatePath("/dashboard/rooms/*/questions");
     return room;
   } catch (error) {
     console.log(`Error during creating room: ${error}`);
@@ -226,6 +249,7 @@ export const getQuestionsAction = async ({ roomId }: { roomId: string }) => {
   }
 };
 import { ISubmitUserAnswerAction } from "@/interfaces/interfaces.actions";
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
 
 export const submitUserAnswerAction = async ({
   answers,
@@ -291,7 +315,7 @@ export const updateRoomAction = async ({
       },
     });
 
-    revalidatePath("/rooms/my");
+    revalidatePath("/dashboard/rooms");
     return room;
   } catch (error) {
     console.error(`Error while updating room: ${error}`);
@@ -384,5 +408,64 @@ export const getQuestionsAnswers = async ({
     return answers;
   } catch (error) {
     console.error(`Error while getting answers for ${questionId}`);
+  }
+};
+
+export const getUser = async () => {
+  const clerkUser = await currentUser();
+
+  if (!clerkUser) return null;
+
+  // Check if the MongoDB ID is already stored in Clerk's public metadata
+  let mongoDBId = clerkUser.publicMetadata.mongoDBId;
+
+  if (!mongoDBId) {
+    // If not, find or create the user in MongoDB via Prisma
+    let user = await prisma.user.findUnique({
+      where: { clerkUserId: clerkUser.id },
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          email: clerkUser.emailAddresses[0].emailAddress,
+          username:
+            clerkUser.username || clerkUser.emailAddresses[0].emailAddress,
+          clerkUserId: clerkUser.id,
+        },
+      });
+    }
+
+    // Store the MongoDB ID in Clerk's public metadata
+    await clerkClient.users.updateUserMetadata(clerkUser.id, {
+      publicMetadata: {
+        mongoDBId: user.id,
+      },
+    });
+
+    mongoDBId = user.id;
+  }
+
+  return clerkUser;
+};
+
+export const deleteRoom = async function (roomId: string, userId: string) {
+  try {
+    const room = await prisma.room.delete({
+      where: {
+        creator: userId,
+        id: roomId,
+      },
+    });
+    revalidatePath("/dashboard/rooms");
+    return {
+      room,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      room: null,
+      error: "some error during deleting room",
+    };
   }
 };

@@ -1,4 +1,5 @@
 import { getQuestionsAction, getRoomById } from "@/actions";
+import NotFoundAlert from "@/components/NotFoundAlert";
 import QuestionForm from "@/components/QuestionForm";
 
 import {
@@ -7,6 +8,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import React from "react";
 
 interface IQuestionsSectionsProps {
@@ -19,7 +22,20 @@ const QuestionsSections = async ({
 }: IQuestionsSectionsProps) => {
   const questions = await getQuestionsAction({ roomId: id });
 
-  if (!questions) return null;
+  if (questions?.length == 0)
+    return (
+      <NotFoundAlert
+        description="Not Found any Question"
+        className="flex-col gap-2"
+      >
+        <Button asChild variant={"outline"} size={"sm"}>
+          <Link href={`/dashboard/rooms/${id}/questions/insert`}>
+            New Question
+          </Link>
+        </Button>
+      </NotFoundAlert>
+    );
+
   return (
     <div className="flex flex-col  gap-10">
       {questions?.map((question) => {

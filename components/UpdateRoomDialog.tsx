@@ -27,10 +27,10 @@ import { Switch } from "./ui/switch";
 import { Loader2, Settings } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { deleteRoom, updateRoomAction } from "@/actions/Rooms";
+
 import SubmitButton from "@/app/SubmitButton";
 import { useToast } from "./ui/use-toast";
-import { getUserByClerk } from "@/actions";
+import { deleteRoom, updateRoomAction } from "@/actions";
 const messages = {
   success: {
     title: "Room deleted successfully",
@@ -73,25 +73,20 @@ const UpdateRoomDialogForm = ({
   if (!isSignedIn && isLoaded) {
     router.push("/sign-in");
   }
-
   if (isLoading) return null;
+  const mongoDBId = user?.publicMetadata.mongoDBId as string;
 
   const handleOnSubmit = async (values: createRoomSchemaTypes) => {
-    if (!user) return;
-    const userId = await getUserByClerk({
-      clerkId: user.id,
-    });
-    if (!userId) return;
     await updateRoomAction({
       ...values,
-      userId: userId.id,
+      userId: mongoDBId,
       roomId,
       password: isPrivate ? values.password : undefined,
     });
     setIsOpen(false);
   };
   const handleOnSubmitDelete = async () => {
-    const result = await deleteRoom(roomId, user?.id as string);
+    const result = await deleteRoom(roomId, mongoDBId);
     if (!result) return toast({ ...messages["error"], variant: "destructive" });
     toast({ ...messages["success"], variant: "default" });
 
@@ -213,7 +208,7 @@ const UpdateRoomDialogForm = ({
                 {isSubmitting ? (
                   <Loader2 className="animate-spin" />
                 ) : (
-                  <span>Create</span>
+                  <span>Update</span>
                 )}
               </Button>
             </DialogFooter>

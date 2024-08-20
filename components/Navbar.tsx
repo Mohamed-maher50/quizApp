@@ -24,10 +24,7 @@ const Navbar = () => {
           {isSignedIn && (
             <>
               <Button asChild variant={"ghost"}>
-                <Link href={"/my/rooms/exams"}>My Exams</Link>
-              </Button>
-              <Button asChild variant={"outline"}>
-                <Link href={"/rooms/my"}>my Rooms</Link>
+                <Link href={"/dashboard/exams"}>Dashboard</Link>
               </Button>
             </>
           )}

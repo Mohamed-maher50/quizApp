@@ -1,8 +1,7 @@
-import { getMyRooms } from "@/actions";
-import { getUser } from "@/actions/Users.actions";
+import { getMyRooms, getUser } from "@/actions";
+
 import CopyButton from "@/components/CopyButton";
 import CreateRoomDialogForm from "@/components/CreateRoomDialogForm";
-import RoomPagination from "@/components/RoomPagination";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,19 +17,22 @@ import UpdateRoomDialogForm from "@/components/UpdateRoomDialog";
 import { BookOpenCheck, Lock, LockOpen, ScanBarcode, User } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import Pagination from "./_components/Pagination";
+
 interface IMyRoomsPageProps {
   searchParams: { page?: string };
 }
 
-const myRooms = async ({ searchParams: { page = "1" } }: IMyRoomsPageProps) => {
+const myRooms = async ({ searchParams: { page } }: IMyRoomsPageProps) => {
   const user = await getUser();
-  let limit = 6;
-  const skip = (+page - 1) * limit;
-  const take = 6;
+  const limit = 8;
+  let pageNumber = +(page || 1) - 1;
+  let skip = pageNumber * limit;
+
   const rooms = await getMyRooms(
-    { userId: user.publicMetadata.mongoDBId as string },
+    { userId: user?.publicMetadata.mongoDBId as string },
     {
-      take,
+      take: limit,
       skip,
       include: {
         Students: true,
@@ -55,11 +57,10 @@ const myRooms = async ({ searchParams: { page = "1" } }: IMyRoomsPageProps) => {
       </>
     );
 
-  const isLastPage = rooms.data.length < limit;
   return (
     <main>
       <div className="container mx-auto">
-        <div className="flex justify-end py-10">
+        <div className="flex justify-end py-3">
           <CreateRoomDialogForm />
         </div>
 
@@ -98,32 +99,18 @@ const myRooms = async ({ searchParams: { page = "1" } }: IMyRoomsPageProps) => {
                       )}
                     </span>
                   </div>
-                  <UpdateRoomDialogForm
-                    defaultValues={{
-                      description: room.description,
-                      title: room.title,
-                      isPrivate: room.isPrivate,
-                      password: room.password,
-                    }}
-                    roomId={room.id}
-                  />
                 </CardContent>
                 <CardFooter className="mt-auto w-full flex flex-col">
                   <Button asChild className="w-full " variant={"outline"}>
-                    <Link href={`/dashboard/admin/rooms/${room.id}`}>
-                      manage
-                    </Link>
+                    <Link href={`/dashboard/rooms/${room.id}`}>manage</Link>
                   </Button>
                 </CardFooter>
               </Card>
             );
           })}
-          <RoomPagination
-            active={+page || 1}
-            count={rooms.data.length}
-            limit={limit}
-            isLastPage={isLastPage}
-          />
+        </div>
+        <div className="w-fit mx-auto my-7">
+          <Pagination pageSize={limit} total={rooms.count} />
         </div>
       </div>
     </main>

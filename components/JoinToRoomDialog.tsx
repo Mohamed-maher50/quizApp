@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import {
   Form,
@@ -13,42 +13,61 @@ import {
 import { useForm, useWatch } from "react-hook-form";
 import { Input } from "./ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { JoinToRoomSchemaTypes } from "@/interfaces/interfaces.actions";
 import { JoinToRoomSchema } from "@/services/validation/JoinToRoomValidator";
 import SubmitButton from "@/app/SubmitButton";
 import { Switch } from "./ui/switch";
 import { joinToRoomAction } from "@/actions";
 import { useUser } from "@clerk/nextjs";
+import { useToast } from "./ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const JoinToRoomDialog = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
   const form = useForm<JoinToRoomSchemaTypes>({
     resolver: zodResolver(JoinToRoomSchema),
+    defaultValues: {},
   });
   const isPrivate = useWatch({
     control: form.control,
     name: "isPrivate",
   });
-
+  const { toast } = useToast();
   const { user } = useUser();
   const userMongoDBId = user?.publicMetadata.mongoDBId as string;
-
   const onSubmit = async (data: JoinToRoomSchemaTypes) => {
-    await joinToRoomAction({
+    const { error } = await joinToRoomAction({
       ...data,
       password: data.password ? data.password : null,
       userId: userMongoDBId,
     });
-    form.reset();
+
+    if (!error) {
+      form.reset();
+      setIsOpen(false);
+      toast({
+        title: error,
+        duration: 3000,
+        className: "bg-green-500 text-lg ",
+      });
+      return router.push("/dashboard/exams");
+    }
+    toast({
+      title: error,
+      duration: 3000,
+      className: "bg-red-500 text-lg ",
+    });
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
+    <Dialog open={isOpen} onOpenChange={(v) => setIsOpen(v)}>
+      <DialogTrigger asChild onClick={() => setIsOpen(!isOpen)}>
         <Button size={"lg"}>Join To Room</Button>
       </DialogTrigger>
       <DialogContent>
+        <DialogTitle>Join To Room By Code</DialogTitle>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -109,7 +128,6 @@ const JoinToRoomDialog = () => {
                 </FormItem>
               )}
             />
-
             <SubmitButton isLoading={form.formState.isSubmitting}>
               Join
             </SubmitButton>

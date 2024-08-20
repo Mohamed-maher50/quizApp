@@ -1,14 +1,11 @@
 import RoomSidebar from "@/components/dashboard/admin/rooms/RoomSidebar";
-import Sidebar from "@/components/dashboard/admin/Sidebar";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Menu, MenuSquare } from "lucide-react";
+import { Menu } from "lucide-react";
 import React, { PropsWithChildren } from "react";
 interface IDashboardRoomsLayoutProps extends PropsWithChildren {
   params: { id: string };
@@ -36,9 +33,6 @@ const DashboardRoomsLayout = ({
           <div className="flex-grow">{children}</div>
         </div>
         <SheetContent side={"left"}>
-          <SheetHeader>
-            {/* <SheetTitle>Are you absolutely sure?</SheetTitle> */}
-          </SheetHeader>
           <RoomSidebar roomId={id} />
         </SheetContent>
       </Sheet>

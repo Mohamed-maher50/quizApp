@@ -1,5 +1,5 @@
 "use client";
-import React, { memo, useState } from "react";
+import React, { memo } from "react";
 import { Button } from "./ui/button";
 import {
   Form,
@@ -54,7 +54,7 @@ const QuestionForm = ({
   formStatus = "submitting",
 }: {
   roomId: string;
-  question: Questions;
+  question?: Questions;
   defaultValues?: Partial<FormValuesTypes>;
   formStatus?: "updating" | "submitting";
 }) => {
@@ -63,7 +63,7 @@ const QuestionForm = ({
     defaultValues: async () => {
       if (formStatus == "updating") {
         const answers = await getQuestionsAnswers({
-          questionId: question.id,
+          questionId: question?.id || "",
         });
         console.log(answers);
         if (!answers)
@@ -77,7 +77,7 @@ const QuestionForm = ({
             ],
           };
         return {
-          text: question.text,
+          text: question?.text || "",
           answers,
         };
       }
@@ -113,7 +113,7 @@ const QuestionForm = ({
     if (formStatus === "updating") {
       if (form.formState.dirtyFields.text) {
         await updateQuestionAction({
-          questionId: question.id,
+          questionId: question?.id || "",
           data: {
             text: data.text,
           },
@@ -123,13 +123,9 @@ const QuestionForm = ({
         await updateAnswersAction({
           answers: data.answers,
         });
-
-        console.log(form.formState.dirtyFields.answers);
       }
-      // await updateAnswers
-      console.log(data);
     }
-    // form.reset();
+    form.reset();
   };
   const handleSelectChange = (selectedValue: string) => {
     const updatedAnswers = options?.map((answer) => ({

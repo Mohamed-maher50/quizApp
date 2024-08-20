@@ -18,6 +18,9 @@ model Room {
   Question    Questions[]
   Students    Students[]
   UserAnswers UserAnswers[]
+  CreateAt    DateTime?     @default(now())
+
+  @@unique([creator, title, code])
 }
 
 model Questions {
@@ -57,6 +60,8 @@ model Students {
   isSubmitted        Boolean?             @default(false)
   UserAnswersDetails UserAnswersDetails[]
   UserAnswers        UserAnswers[]
+
+  @@unique([userId, roomId])
 }
 
 model UserAnswers {

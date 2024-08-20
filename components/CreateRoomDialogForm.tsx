@@ -24,14 +24,13 @@ import {
 import { Input } from "./ui/input";
 import { Switch } from "./ui/switch";
 import { Loader2 } from "lucide-react";
-
 import { useUser } from "@clerk/nextjs";
-import { createNewRoomAction, getUserByClerk } from "@/actions";
-import { getUser } from "@/actions/Users.actions";
-import { currentUser } from "@clerk/nextjs/server";
-
+import { createNewRoomAction } from "@/actions";
 const defaultValues: Partial<createRoomSchemaTypes> = {
+  description: "",
   isPrivate: false,
+  password: undefined,
+  title: "",
 };
 const CreateRoomDialogForm = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,8 +45,8 @@ const CreateRoomDialogForm = () => {
   });
   const { user } = useUser();
   const handleOnSubmit = async (values: createRoomSchemaTypes) => {
-    if (!user) return;
-    const mongoDBId = user.publicMetadata.mongoDBId as string;
+    const mongoDBId = user?.publicMetadata.mongoDBId as string;
+    console.log(mongoDBId);
     await createNewRoomAction({
       ...values,
       userId: mongoDBId,

@@ -1,8 +1,11 @@
+"use client";
 import React, { Fragment } from "react";
 import Sidebar, { SidebarMenu, SidebarMenuItem } from "../Sidebar";
 import Link from "next/link";
-import { Lightbulb, Newspaper, Users } from "lucide-react";
+import { FlaskConical, Lightbulb, Users } from "lucide-react";
 import { SheetClose } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
 type TLink = {
   href: string;
@@ -12,52 +15,64 @@ type TLink = {
 };
 const createRoomSidebarLinks = (roomId: string) => [
   {
-    href: `/dashboard/admin/rooms/${roomId}/members`,
-    icon: Users,
-    label: "Members",
+    href: `/dashboard/exams`,
+    icon: FlaskConical,
+    label: "Exams",
     submenu: [
-      {
-        href: `/dashboard/admin/rooms/${roomId}/answers`,
-        icon: Newspaper,
-        label: "answers",
-      },
-      {
-        href: `/dashboard/admin/rooms/${roomId}/settings`,
-        icon: Lightbulb,
-        label: "insert",
-      },
+      // {
+      //   href: `/dashboard/rooms/${roomId}/answers`,
+      //   icon: Newspaper,
+      //   label: "answers",
+      // },
     ],
   },
   {
-    href: `/dashboard/admin/rooms/${roomId}/questions`,
+    href: `/dashboard/rooms/${roomId}/students`,
+    icon: Users,
+    label: "Students",
+    submenu: [
+      // {
+      //   href: `/dashboard/rooms/${roomId}/answers`,
+      //   icon: Newspaper,
+      //   label: "answers",
+      // },
+    ],
+  },
+  {
+    href: `/dashboard/rooms/${roomId}/questions`,
     icon: Lightbulb,
     label: "Questions",
     submenu: [
       {
-        href: `/dashboard/admin/rooms/${roomId}/questions/insert`,
+        href: `/dashboard/rooms/${roomId}/questions/insert`,
         icon: Lightbulb,
         label: "New Question",
       },
-      {
-        href: `/dashboard/admin/rooms/${roomId}/settings`,
-        icon: Lightbulb,
-        label: "insert",
-      },
     ],
+  },
+  {
+    href: `/dashboard/rooms/${roomId}/settings`,
+    icon: Lightbulb,
+    label: "Settings",
   },
 ];
 
-const recursiveLinks = (data: TLink[]) => {
+const recursiveLinks = (data: TLink[], path: string) => {
   return (
     <>
       {data.map((link, index) => {
         let paddingInline = 0;
+        console.log(path);
+        console.log(link.href);
         return (
           <Fragment key={index}>
             <SidebarMenuItem>
               <SheetClose asChild>
-                <Link href={link.href}>
-                  <link.icon className="mr-2 h-4 w-4" />
+                <Link
+                  href={link.href}
+                  className={cn(path == link.href && "bg-primary")}
+                >
+                  <link.icon className={cn("mr-2 h-4 w-4")} />
                   {link.label}
                 </Link>
               </SheetClose>
@@ -69,7 +84,7 @@ const recursiveLinks = (data: TLink[]) => {
                   paddingInline: (paddingInline += 1.2) + "rem",
                 }}
               >
-                {recursiveLinks(link.submenu)}
+                {recursiveLinks(link.submenu, path)}
               </SidebarMenu>
             )}
           </Fragment>
@@ -80,10 +95,12 @@ const recursiveLinks = (data: TLink[]) => {
 };
 const RoomSidebar = ({ roomId }: { roomId: string }) => {
   const roomLinks = createRoomSidebarLinks(roomId);
+  const path = usePathname();
+  console.log(path);
   return (
     <div>
       <Sidebar title="Room Dashboard" className="">
-        <SidebarMenu>{recursiveLinks(roomLinks)}</SidebarMenu>
+        <SidebarMenu>{recursiveLinks(roomLinks, path)}</SidebarMenu>
       </Sidebar>
     </div>
   );

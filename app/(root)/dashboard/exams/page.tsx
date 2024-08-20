@@ -1,11 +1,11 @@
-import { getMyExamsRooms, getStudent } from "@/actions";
-import { getUser } from "@/actions/Users.actions";
+import { getMyExamsRooms, getUser } from "@/actions";
 
 import React, { Suspense } from "react";
-import Pagination from "./_components/Pagination";
+
 import Loader from "@/components/loader/Loader";
 import Wait from "@/lib/Wait";
 import ExamsCards from "./_components/ExamCards";
+import Pagination from "./_components/Pagination";
 
 interface IMyRoomExamsProps {
   searchParams: { page?: string };

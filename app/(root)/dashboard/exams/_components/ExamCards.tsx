@@ -30,12 +30,15 @@ interface IExamCardsProps {
 }
 const ExamsCards = async ({ data }: { data: IExamCardsProps[] }) => {
   return (
-    <section className="grid  grid-cols-4  gap-3" key={Math.random()}>
+    <section
+      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3  xl:grid-cols-4 gap-3"
+      key={Math.random()}
+    >
       {data?.map(({ room, isSubmitted }) => {
         return (
           <Card
             className={cn(
-              "border-secondary columns-2 w-fit flex border flex-col  duration-500  p-4 rounded-md shadow-md",
+              "border-secondary   flex border flex-col  duration-500  p-4 rounded-md shadow-md",
               isSubmitted ? "border-green-500 " : "border-red-500"
             )}
             key={room.id}

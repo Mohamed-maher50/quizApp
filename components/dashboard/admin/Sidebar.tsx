@@ -6,7 +6,6 @@ import React, { HTMLAttributes, PropsWithChildren, ReactNode } from "react";
 
 export function Sidebar({
   className,
-  title,
   children,
 }: {
   className: string;

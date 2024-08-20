@@ -1,5 +1,5 @@
-import { getRoomById, getStudent } from "@/actions";
-import { getUser } from "@/actions/Users.actions";
+import { getRoomById, getStudent, getUser } from "@/actions";
+
 import QuestionsForm from "@/components/QuestionsForm";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
