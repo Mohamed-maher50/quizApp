@@ -1,10 +1,5 @@
 import RoomSidebar from "@/components/dashboard/admin/rooms/RoomSidebar";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
 import React, { PropsWithChildren } from "react";
 interface IDashboardRoomsLayoutProps extends PropsWithChildren {
@@ -13,7 +8,6 @@ interface IDashboardRoomsLayoutProps extends PropsWithChildren {
 const DashboardRoomsLayout = ({
   children,
   params: { id },
-  ...rest
 }: IDashboardRoomsLayoutProps) => {
   return (
     <div className="container mx-auto">

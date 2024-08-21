@@ -21,20 +21,9 @@ import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent } from "react";
 import { useForm, useWatch } from "react-hook-form";
-const messages = {
-  success: {
-    title: "Room deleted successfully",
-    description: "Your room has been deleted successfully.",
-    variant: "default",
-  },
-  error: {
-    title: "Failed to delete room",
-    description: "An error occurred while delete your room.",
-    variant: "destructive",
-  },
-};
+import { defaultValues, messages } from "./_constants";
 
 interface IRoomSettingsProps {
   params: {
@@ -42,14 +31,7 @@ interface IRoomSettingsProps {
   };
 }
 
-const defaultValues = {
-  title: "",
-  description: "",
-  isPrivate: false,
-  password: "",
-};
 const RoomSettings = ({ params: { id } }: IRoomSettingsProps) => {
-  const [isOpen, setIsOpen] = useState(false);
   const { isSignedIn, user, isLoaded } = useUser();
   const router = useRouter();
   const form = useForm<createRoomSchemaTypes>({
@@ -68,9 +50,7 @@ const RoomSettings = ({ params: { id } }: IRoomSettingsProps) => {
   if (!isSignedIn && isLoaded) {
     router.push("/sign-in");
   }
-
   const mongoDBId = user?.publicMetadata.mongoDBId as string;
-
   const handleOnSubmit = async (values: createRoomSchemaTypes) => {
     await updateRoomAction({
       ...values,
@@ -78,7 +58,6 @@ const RoomSettings = ({ params: { id } }: IRoomSettingsProps) => {
       roomId: id,
       password: isPrivate ? values.password : undefined,
     });
-    setIsOpen(false);
   };
   const handleOnSubmitDelete = async (e: FormEvent) => {
     e.preventDefault();
@@ -86,7 +65,6 @@ const RoomSettings = ({ params: { id } }: IRoomSettingsProps) => {
     if (!result) return toast({ ...messages["error"], variant: "destructive" });
     toast({ ...messages["success"], variant: "default" });
     router.replace("/dashboard/rooms");
-    setIsOpen(false);
   };
   if (isLoading)
     return (
@@ -196,7 +174,7 @@ const RoomSettings = ({ params: { id } }: IRoomSettingsProps) => {
       <form onSubmit={handleOnSubmitDelete}>
         <Alert
           variant={"destructive"}
-          className="my-6 flex items-center justify-between"
+          className="my-6 md:flex max-md:text-center items-center justify-between"
         >
           <div>
             <AlertTitle> Action is Permanent</AlertTitle>
@@ -205,7 +183,11 @@ const RoomSettings = ({ params: { id } }: IRoomSettingsProps) => {
               irreversible, and once deleted, the room cannot be restored.
             </AlertDescription>
           </div>
-          <SubmitButton type="submit" variant={"destructive"}>
+          <SubmitButton
+            type="submit"
+            className="max-md:mx-auto max-md:block max-md:w-fit max-md:mt-2"
+            variant={"destructive"}
+          >
             Delete Room
           </SubmitButton>
         </Alert>

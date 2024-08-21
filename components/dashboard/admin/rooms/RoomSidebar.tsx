@@ -15,28 +15,10 @@ type TLink = {
 };
 const createRoomSidebarLinks = (roomId: string) => [
   {
-    href: `/dashboard/exams`,
-    icon: FlaskConical,
-    label: "Exams",
-    submenu: [
-      // {
-      //   href: `/dashboard/rooms/${roomId}/answers`,
-      //   icon: Newspaper,
-      //   label: "answers",
-      // },
-    ],
-  },
-  {
     href: `/dashboard/rooms/${roomId}/students`,
     icon: Users,
     label: "Students",
-    submenu: [
-      // {
-      //   href: `/dashboard/rooms/${roomId}/answers`,
-      //   icon: Newspaper,
-      //   label: "answers",
-      // },
-    ],
+    submenu: [],
   },
   {
     href: `/dashboard/rooms/${roomId}/questions`,

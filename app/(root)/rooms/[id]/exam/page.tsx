@@ -1,11 +1,10 @@
 import { getRoomById, getStudent, getUser } from "@/actions";
-
 import QuestionsForm from "@/components/QuestionsForm";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { ClipboardCheck, Home, RocketIcon } from "lucide-react";
+import { ClipboardCheck, Home } from "lucide-react";
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 import React from "react";
 
 const ExamPage = async ({ params: { id } }: { params: { id: string } }) => {
