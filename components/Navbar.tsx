@@ -11,14 +11,15 @@ const Navbar = () => {
   return (
     <nav className="bg-secondary  dark:bg-transparent">
       <div className="container  mx-auto  px-5 ">
-        <div className="flex gap-3 items-center">
+        <div className="flex gap-3 p-2 items-center">
           <Link href={"/"} className="flex-1 ">
             <Image
-              src="/logo.png"
+              src="/headlight (1).png"
               alt="QuizWiz"
-              width={60}
-              height={60}
-              className="object-cover"
+              width={40}
+              height={40}
+              className=" object-contain"
+              priority
             />
           </Link>
           {isSignedIn && (

@@ -66,4 +66,11 @@
   body {
     @apply bg-background text-foreground;
   }
+}@layer base {
+
+  html,
+  body,
+  #__next {
+    @apply h-screen;
+  }
 }
